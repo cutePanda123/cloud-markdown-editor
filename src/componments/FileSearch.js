@@ -1,8 +1,39 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 const FileSearch = ({ title, onFileSearch }) => {
   const [isInputActive, setInputActive] = useState(false);
   const [value, setValue] = useState("");
+  let node = useRef(null);
+  const closeSearch = (e) => {
+    e.preventDefault();
+    setInputActive(false);
+    setValue("");
+  };
+
+  useEffect(() => {
+    const handleInputEvent = (event) => {
+      const { keyCode } = event;
+      if (!isInputActive) {
+        return;
+      }
+      if (keyCode === 13) {
+        onFileSearch(value);
+      } else if (keyCode === 27) {
+        closeSearch(event);
+      }
+    };
+
+    document.addEventListener("keyup", handleInputEvent);
+    return () => {
+      document.removeEventListener("keyup", handleInputEvent);
+    };
+  });
+
+  useEffect(() => {
+    if (isInputActive) {
+      node.current.focus();
+    }
+  }, [isInputActive]);
 
   return (
     <div className="alert alert-primary">
@@ -21,10 +52,11 @@ const FileSearch = ({ title, onFileSearch }) => {
         </div>
       )}
       {isInputActive && (
-        <div className='row'>
+        <div className="row">
           <input
             className="form-control col-8"
             value={value}
+            ref={node}
             onChange={(e) => {
               setValue(e.target.value);
             }}
@@ -32,9 +64,7 @@ const FileSearch = ({ title, onFileSearch }) => {
           <button
             type="button"
             className="btn btn-primary col-4"
-            onClick={() => {
-              setInputActive(false);
-            }}
+            onClick={closeSearch}
           >
             Close
           </button>
