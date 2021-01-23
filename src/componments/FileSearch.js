@@ -5,12 +5,12 @@ import PropTypes from "prop-types";
 
 const FileSearch = ({ title, onFileSearch }) => {
   const [isInputActive, setInputActive] = useState(false);
-  const [value, setValue] = useState("");
+  const [value, setInputValue] = useState("");
   let node = useRef(null);
   const closeSearch = (e) => {
     e.preventDefault();
     setInputActive(false);
-    setValue("");
+    setInputValue("");
   };
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const FileSearch = ({ title, onFileSearch }) => {
             value={value}
             ref={node}
             onChange={(e) => {
-              setValue(e.target.value);
+              setInputValue(e.target.value);
             }}
           />
           <button type="button" className="icon-button" onClick={closeSearch}>
