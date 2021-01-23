@@ -2,34 +2,31 @@ import React, { useEffect, useState, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import PropTypes from "prop-types";
+import useKeyPress from '../hooks/useKeyPress';
+import { KEY_RETURN, KEY_ESCAPE } from 'keycode-js';
 
 const FileSearch = ({ title, onFileSearch }) => {
   const [isInputActive, setInputActive] = useState(false);
-  const [value, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState("");
+  const enterPressed = useKeyPress(KEY_RETURN);
+  const escPressed = useKeyPress(KEY_ESCAPE);
   let node = useRef(null);
-  const closeSearch = (e) => {
-    e.preventDefault();
+  const closeSearch = () => {
     setInputActive(false);
     setInputValue("");
   };
 
   useEffect(() => {
-    const handleInputEvent = (event) => {
-      const { keyCode } = event;
       if (!isInputActive) {
         return;
       }
-      if (keyCode === 13) {
-        onFileSearch(value);
-      } else if (keyCode === 27) {
-        closeSearch(event);
+      if (enterPressed) {
+        onFileSearch(inputValue);
+        return;
       }
-    };
-
-    document.addEventListener("keyup", handleInputEvent);
-    return () => {
-      document.removeEventListener("keyup", handleInputEvent);
-    };
+      if (escPressed) {
+        closeSearch();
+      }
   });
 
   useEffect(() => {
@@ -58,7 +55,7 @@ const FileSearch = ({ title, onFileSearch }) => {
         <>
           <input
             className="form-control"
-            value={value}
+            value={inputValue}
             ref={node}
             onChange={(e) => {
               setInputValue(e.target.value);
