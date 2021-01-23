@@ -6,13 +6,13 @@ function App() {
   return (
     <div className="App container-fluid">
       <div className="row">
-        <div className="col-6 bg-danger left-panel">
+        <div className="col-6 left-panel">
           <FileSearch 
             title={'My files'}
             onFileSearch={(value) => {console.log(value)}}
           />
         </div>
-        <div className="col-6 bg-primary right-panel">
+        <div className="col-6 right-panel">
           <h1>Right panel!!!</h1>
         </div>
       </div>
