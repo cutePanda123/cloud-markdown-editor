@@ -50,8 +50,10 @@ function App() {
         <div className="col-9 right-panel">
           <TabList 
             files={defaultFiles}
-            activeId={1}
+            activeId='1'
+            unsavedIds={['1', '2']}
             onClickTab={(id) => {console.log('click tab:' + id)}}
+            onCloseTab={(id) => {console.log('close tab:' + id)}}
           />
         </div>
       </div>
