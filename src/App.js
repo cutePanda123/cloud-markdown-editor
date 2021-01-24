@@ -5,12 +5,13 @@ import FileList from "./componments/FileList";
 import defaultFiles from "./data/defaultFiles";
 import { faPlus, faFileImport } from "@fortawesome/free-solid-svg-icons";
 import BottomBtn from "./componments/BottomBtn";
+import TabList from "./componments/TabList";
 
 function App() {
   return (
     <div className="App container-fluid px-0">
       <div className="row no-gutters">
-        <div className="col-6 left-panel">
+        <div className="col-3 left-panel">
           <FileSearch
             title={"My files"}
             onFileSearch={(value) => {
@@ -46,8 +47,12 @@ function App() {
             </div>
           </div>
         </div>
-        <div className="col-6 right-panel">
-          <h1>Right panel!!!</h1>
+        <div className="col-9 right-panel">
+          <TabList 
+            files={defaultFiles}
+            activeId={1}
+            onClickTab={(id) => {console.log('click tab:' + id)}}
+          />
         </div>
       </div>
     </div>
