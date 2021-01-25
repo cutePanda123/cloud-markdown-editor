@@ -13,9 +13,9 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
   const escPressed = useKeyPress(KEY_ESCAPE);
   const node = useRef();
   const closeEdit = (editFileId) => {
+    const editFile = files.find(file => file.id === editFileId)
     setEditFileId(-1);
     setInputValue("");
-    const editFile = files.find(file => file.id === editFileId);
     if (editFile.isNew) {
       onFileDelete(editFile.id);
     }
@@ -25,17 +25,18 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
     if (editFileId === -1) {
       return;
     }
-    
+    const editFile = files.find(file => file.id === editFileId)
     if (enterPressed) {
       if (inputValue.trim() !== '') {
         onSaveEdit(editFileId, inputValue);
+        closeEdit(editFile.id);
+      } else {
+        closeEdit(editFile.id);
       }
-      setEditFileId(-1);
-      closeEdit(editFileId);
       return;
     }
     if (escPressed) {
-      closeEdit(editFileId);
+      closeEdit(editFile.id);
     }
   });
 
@@ -46,7 +47,7 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
   }, [editFileId]);
 
   useEffect(() => {
-    const newFile = files.find(file => file.isNew);
+    const newFile = files.find(file => file.isNew)
     if (newFile) {
       setEditFileId(newFile.id);
       setInputValue(newFile.title);
@@ -109,7 +110,7 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
                 <button
                   type="button"
                   className="icon-button col-2"
-                  onClick={() => {closeEdit(file.id)}}
+                  onClick={(file) => {closeEdit(file)}}
                 >
                   <FontAwesomeIcon size="lg" icon={faTimes} title="Close" />
                 </button>

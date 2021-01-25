@@ -10,17 +10,18 @@ import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { flattenArray, objToArray } from "./utils/helper";
 
 function App() {
-  const [files, setFiles] = useState(defaultFiles);
+  const [files, setFiles] = useState(flattenArray(defaultFiles));
   const [activeFileId, setActiveFileId] = useState("");
   const [openedFileIds, setOpenedFileIds] = useState([]);
   const [unsavedFileIds, setUnsavedFileIds] = useState([]);
   const [searchedFiles, setSearchedFiles] = useState([]);
   const openedFiles = openedFileIds.map((id) => {
-    return files.find((file) => file.id === id);
+    return files[id];
   });
-  const activeFile = files.find((file) => file.id === activeFileId);
+  const activeFile = files[activeFileId];
 
   const fileClick = (id) => {
     setActiveFileId(id);
@@ -44,50 +45,38 @@ function App() {
     }
   };
   const fileChange = (id, value) => {
-    const newFiles = files.map((file) => {
-      if (file.id === id) {
-        file.body = value;
-      }
-      return file;
-    });
-    setFiles(newFiles);
+    const modifiedFile = { ...files[id], body: value };
+    setFiles({ ...files, [id]: modifiedFile });
     if (!unsavedFileIds.includes(id)) {
       setUnsavedFileIds([...unsavedFileIds, id]);
     }
   };
   const fileDelete = (id) => {
-    const newFiles = files.filter((file) => file.id !== id);
+    delete files[id];
     tabClose(id);
-    setFiles(newFiles);
+    setFiles(files);
   };
   const fileNameUpdate = (id, title) => {
-    const newFiles = files.map((file) => {
-      if (file.id === id) {
-        file.title = title;
-        file.isNew = false;
-      }
-      return file;
-    });
-    setFiles(newFiles);
+    const modifiedFile = { ...files[id], title: title, isNew: false };
+    setFiles({ ...files, [id]: modifiedFile });
   };
   const fileSearch = (keyword) => {
-    const newFiles = files.filter((file) => file.title.includes(keyword));
+    const newFiles = filesArray.filter((file) => file.title.includes(keyword));
     setSearchedFiles(newFiles);
   };
   const fileCreate = () => {
-    const newFiles = [
-      ...files,
-      {
-        id: uuidv4(),
-        title: "",
-        body: "## new markdown",
-        createdAt: new Date().getTime(),
-        isNew: true,
-      },
-    ];
-    setFiles(newFiles);
+    const newId = uuidv4();
+    const newFile = {
+      id: newId,
+      title: "",
+      body: "## new markdown",
+      createdAt: new Date().getTime(),
+      isNew: true,
+    };
+    setFiles({ ...files, [newId]: newFile });
   };
-  const fileList = searchedFiles.length > 0 ? searchedFiles : files;
+  const filesArray = objToArray(files);
+  const fileList = searchedFiles.length > 0 ? searchedFiles : filesArray;
   return (
     <div className="App container-fluid px-0">
       <div className="row no-gutters">
