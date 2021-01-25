@@ -12,23 +12,30 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
   const enterPressed = useKeyPress(KEY_RETURN);
   const escPressed = useKeyPress(KEY_ESCAPE);
   const node = useRef();
-  const closeEdit = () => {
+  const closeEdit = (editFileId) => {
     setEditFileId(-1);
     setInputValue("");
+    const editFile = files.find(file => file.id === editFileId);
+    if (editFile.isNew) {
+      onFileDelete(editFile.id);
+    }
   };
 
   useEffect(() => {
     if (editFileId === -1) {
       return;
     }
+    
     if (enterPressed) {
-      onSaveEdit(editFileId, inputValue);
+      if (inputValue.trim() !== '') {
+        onSaveEdit(editFileId, inputValue);
+      }
       setEditFileId(-1);
-      closeEdit();
+      closeEdit(editFileId);
       return;
     }
     if (escPressed) {
-      closeEdit();
+      closeEdit(editFileId);
     }
   });
 
@@ -38,6 +45,14 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
     }
   }, [editFileId]);
 
+  useEffect(() => {
+    const newFile = files.find(file => file.isNew);
+    if (newFile) {
+      setEditFileId(newFile.id);
+      setInputValue(newFile.title);
+    }
+  }, [files]);
+
   return (
     <ul className="list-group list-group-flush file-list">
       {files.map((file, index) => {
@@ -46,7 +61,7 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
             key={file.id}
             className="list-group-item bg-light d-flex align-items-center file-item row mx-0"
           >
-            {file.id !== editFileId && (
+            {file.id !== editFileId && !file.isNew && (
               <>
                 <span className="col-2">
                   <FontAwesomeIcon size="lg" icon={faMarkdown} />
@@ -80,11 +95,12 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
                 </button>
               </>
             )}
-            {file.id === editFileId && (
+            {(file.id === editFileId || file.isNew) && (
               <>
                 <input
                   className="form-control col-10"
                   value={inputValue}
+                  placeholder='Please enter a file name'
                   ref={node}
                   onChange={(e) => {
                     setInputValue(e.target.value);
@@ -93,7 +109,7 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
                 <button
                   type="button"
                   className="icon-button col-2"
-                  onClick={closeEdit}
+                  onClick={() => {closeEdit(file.id)}}
                 >
                   <FontAwesomeIcon size="lg" icon={faTimes} title="Close" />
                 </button>
