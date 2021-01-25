@@ -31,7 +31,7 @@ const TabList = ({ files, activeId, unsavedIds, onClickTab, onCloseTab }) => {
                 className="ml-2 close-icon"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onClickTab(file.id);
+                  onCloseTab(file.id);
                 }}
               >
                 <FontAwesomeIcon icon={faTimes} />
@@ -52,7 +52,7 @@ TabList.propTypes = {
   activeId: PropTypes.string,
   unsavedIds: PropTypes.array,
   onClickTab: PropTypes.func,
-  onClickTab: PropTypes.func,
+  onCloseTab: PropTypes.func,
 };
 
 TabList.defaultTypes = {
