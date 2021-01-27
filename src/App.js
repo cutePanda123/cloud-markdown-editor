@@ -3,7 +3,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import FileSearch from "./componments/FileSearch";
 import FileList from "./componments/FileList";
 import defaultFiles from "./data/defaultFiles";
-import { faPlus, faFileImport } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlus,
+  faFileImport,
+  faSave,
+} from "@fortawesome/free-solid-svg-icons";
 import BottomBtn from "./componments/BottomBtn";
 import TabList from "./componments/TabList";
 import SimpleMDE from "react-simplemde-editor";
@@ -11,6 +15,9 @@ import "easymde/dist/easymde.min.css";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { flattenArray, objToArray } from "./utils/helper";
+import fileHelper from "./utils/fileHelper";
+const { join } = window.require("path");
+const { remote } = window.require("electron");
 
 function App() {
   const [files, setFiles] = useState(flattenArray(defaultFiles));
@@ -18,6 +25,7 @@ function App() {
   const [openedFileIds, setOpenedFileIds] = useState([]);
   const [unsavedFileIds, setUnsavedFileIds] = useState([]);
   const [searchedFiles, setSearchedFiles] = useState([]);
+  const savedLocation = remote.app.getPath("documents");
   const openedFiles = openedFileIds.map((id) => {
     return files[id];
   });
@@ -56,9 +64,24 @@ function App() {
     tabClose(id);
     setFiles(files);
   };
-  const fileNameUpdate = (id, title) => {
+  const fileNameUpdate = (id, title, isNew) => {
     const modifiedFile = { ...files[id], title: title, isNew: false };
-    setFiles({ ...files, [id]: modifiedFile });
+    if (isNew) {
+      fileHelper
+        .writeFile(join(savedLocation, `${title}.md`), files[id].body)
+        .then(() => {
+          setFiles({ ...files, [id]: modifiedFile });
+        });
+    } else {
+      fileHelper
+        .renameFile(
+          join(savedLocation, `${files[id].title}.md`),
+          join(savedLocation, `${title}.md`)
+        )
+        .then(() => {
+          setFiles({ ...files, [id]: modifiedFile });
+        });
+    }
   };
   const fileSearch = (keyword) => {
     const newFiles = filesArray.filter((file) => file.title.includes(keyword));
@@ -75,6 +98,15 @@ function App() {
     };
     setFiles({ ...files, [newId]: newFile });
   };
+  const fileSave = () => {
+    fileHelper.writeFile(
+      join(savedLocation, `${activeFile.title}.md`),
+      activeFile.body
+    ).then(() => {
+      setUnsavedFileIds(unsavedFileIds.filter(id => id !== activeFileId));
+    });
+  };
+
   const filesArray = objToArray(files);
   const fileList = searchedFiles.length > 0 ? searchedFiles : filesArray;
   return (
@@ -130,6 +162,12 @@ function App() {
                 onChange={(value) => {
                   fileChange(activeFile.id, value);
                 }}
+              />
+              <BottomBtn
+                text="Save"
+                colorClassName="btn-primary"
+                iconName={faSave}
+                onBtnClick={fileSave}
               />
             </>
           )}

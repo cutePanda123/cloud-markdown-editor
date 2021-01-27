@@ -27,7 +27,7 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
     }
     const editFile = files.find((file) => file.id === editFileId);
     if (enterPressed && inputValue.trim() !== "") {
-      onSaveEdit(editFileId, inputValue);
+      onSaveEdit(editFileId, inputValue, editFile.isNew);
       setEditFileId(-1);
       setInputValue("");
       return;

@@ -8,7 +8,8 @@ app.on('ready', () => {
         width: 1024,
         height: 680,
         webPreferences: {
-            nodeIntegeration: true
+            nodeIntegration: true,
+            enableRemoteModule: true
         }
     });
 
