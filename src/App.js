@@ -18,9 +18,27 @@ import { flattenArray, objToArray } from "./utils/helper";
 import fileHelper from "./utils/fileHelper";
 const { join } = window.require("path");
 const { remote } = window.require("electron");
+const Store = window.require("electron-store");
+
+const fileStore = new Store({
+  name: "files-data",
+});
+const saveFilesToStore = (files) => {
+  const fileStoreObj = objToArray(files).reduce((result, file) => {
+    const { id, path, title, createdAt } = file;
+    result[id] = {
+      id,
+      path,
+      title,
+      createdAt,
+    };
+    return result;
+  }, {});
+  fileStore.set('files', fileStoreObj);
+};
 
 function App() {
-  const [files, setFiles] = useState(flattenArray(defaultFiles));
+  const [files, setFiles] = useState(fileStore.get('files') || {});
   const [activeFileId, setActiveFileId] = useState("");
   const [openedFileIds, setOpenedFileIds] = useState([]);
   const [unsavedFileIds, setUnsavedFileIds] = useState([]);
@@ -60,26 +78,33 @@ function App() {
     }
   };
   const fileDelete = (id) => {
-    delete files[id];
-    tabClose(id);
-    setFiles(files);
+    fileHelper.deleteFile(files[id].path).then(() => {
+      delete files[id];
+      tabClose(id);
+      setFiles(files);
+      saveFilesToStore(files);
+    });
   };
   const fileNameUpdate = (id, title, isNew) => {
-    const modifiedFile = { ...files[id], title: title, isNew: false };
+    const newFilePath = join(savedLocation, `${title}.md`);
+    const modifiedFile = { ...files[id], title: title, isNew: false, path: newFilePath };
+    const newFiles = {...files, [id]: modifiedFile};
     if (isNew) {
       fileHelper
-        .writeFile(join(savedLocation, `${title}.md`), files[id].body)
+        .writeFile(newFilePath, files[id].body)
         .then(() => {
-          setFiles({ ...files, [id]: modifiedFile });
+          setFiles(newFiles);
+          saveFilesToStore(newFiles);
         });
     } else {
       fileHelper
         .renameFile(
           join(savedLocation, `${files[id].title}.md`),
-          join(savedLocation, `${title}.md`)
+          newFilePath
         )
         .then(() => {
-          setFiles({ ...files, [id]: modifiedFile });
+          setFiles(newFiles);
+          saveFilesToStore(newFiles);
         });
     }
   };
@@ -99,12 +124,11 @@ function App() {
     setFiles({ ...files, [newId]: newFile });
   };
   const fileSave = () => {
-    fileHelper.writeFile(
-      join(savedLocation, `${activeFile.title}.md`),
-      activeFile.body
-    ).then(() => {
-      setUnsavedFileIds(unsavedFileIds.filter(id => id !== activeFileId));
-    });
+    fileHelper
+      .writeFile(join(savedLocation, `${activeFile.title}.md`), activeFile.body)
+      .then(() => {
+        setUnsavedFileIds(unsavedFileIds.filter((id) => id !== activeFileId));
+      });
   };
 
   const filesArray = objToArray(files);
