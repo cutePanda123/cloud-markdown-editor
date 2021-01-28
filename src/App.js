@@ -34,11 +34,11 @@ const saveFilesToStore = (files) => {
     };
     return result;
   }, {});
-  fileStore.set('files', fileStoreObj);
+  fileStore.set("files", fileStoreObj);
 };
 
 function App() {
-  const [files, setFiles] = useState(fileStore.get('files') || {});
+  const [files, setFiles] = useState(fileStore.get("files") || {});
   const [activeFileId, setActiveFileId] = useState("");
   const [openedFileIds, setOpenedFileIds] = useState([]);
   const [unsavedFileIds, setUnsavedFileIds] = useState([]);
@@ -53,9 +53,9 @@ function App() {
     setActiveFileId(id);
     const currentFile = files[id];
     if (!currentFile.isLoaded) {
-      fileHelper.readFile(currentFile.path).then(value => {
-        const newFile = {...files[id], body: value, isLoaded: true};
-        setFiles({...files, [id]: newFile});
+      fileHelper.readFile(currentFile.path).then((value) => {
+        const newFile = { ...files[id], body: value, isLoaded: true };
+        setFiles({ ...files, [id]: newFile });
       });
     }
     if (!openedFileIds.includes(id)) {
@@ -85,30 +85,35 @@ function App() {
     }
   };
   const fileDelete = (id) => {
+    if (files[id].isNew) {
+      const { [id]: value, ...afterDelete } = files;
+      setFiles(afterDelete);
+      return;
+    }
     fileHelper.deleteFile(files[id].path).then(() => {
-      delete files[id];
+      const { [id]: value, ...afterDelete } = files;
       tabClose(id);
-      setFiles(files);
+      setFiles(afterDelete);
       saveFilesToStore(files);
     });
   };
   const fileNameUpdate = (id, title, isNew) => {
     const newFilePath = join(savedLocation, `${title}.md`);
-    const modifiedFile = { ...files[id], title: title, isNew: false, path: newFilePath };
-    const newFiles = {...files, [id]: modifiedFile};
+    const modifiedFile = {
+      ...files[id],
+      title: title,
+      isNew: false,
+      path: newFilePath,
+    };
+    const newFiles = { ...files, [id]: modifiedFile };
     if (isNew) {
-      fileHelper
-        .writeFile(newFilePath, files[id].body)
-        .then(() => {
-          setFiles(newFiles);
-          saveFilesToStore(newFiles);
-        });
+      fileHelper.writeFile(newFilePath, files[id].body).then(() => {
+        setFiles(newFiles);
+        saveFilesToStore(newFiles);
+      });
     } else {
       fileHelper
-        .renameFile(
-          join(savedLocation, `${files[id].title}.md`),
-          newFilePath
-        )
+        .renameFile(join(savedLocation, `${files[id].title}.md`), newFilePath)
         .then(() => {
           setFiles(newFiles);
           saveFilesToStore(newFiles);
