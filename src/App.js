@@ -16,7 +16,7 @@ import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { flattenArray, objToArray } from "./utils/helper";
 import fileHelper from "./utils/fileHelper";
-const { join } = window.require("path");
+const { join, basename, extname, dirname } = window.require("path");
 const { remote } = window.require("electron");
 const Store = window.require("electron-store");
 
@@ -98,7 +98,9 @@ function App() {
     });
   };
   const fileNameUpdate = (id, title, isNew) => {
-    const newFilePath = join(savedLocation, `${title}.md`);
+    const newFilePath = isNew
+      ? join(savedLocation, `${title}.md`)
+      : join(dirname(files[id].path), `${title}.md`);
     const modifiedFile = {
       ...files[id],
       title: title,
@@ -113,7 +115,7 @@ function App() {
       });
     } else {
       fileHelper
-        .renameFile(join(savedLocation, `${files[id].title}.md`), newFilePath)
+        .renameFile(files[id].path, newFilePath)
         .then(() => {
           setFiles(newFiles);
           saveFilesToStore(newFiles);
@@ -136,10 +138,51 @@ function App() {
     setFiles({ ...files, [newId]: newFile });
   };
   const fileSave = () => {
-    fileHelper
-      .writeFile(join(savedLocation, `${activeFile.title}.md`), activeFile.body)
-      .then(() => {
-        setUnsavedFileIds(unsavedFileIds.filter((id) => id !== activeFileId));
+    fileHelper.writeFile(activeFile.path, activeFile.body).then(() => {
+      setUnsavedFileIds(unsavedFileIds.filter((id) => id !== activeFileId));
+    });
+  };
+
+  const filesImport = () => {
+    remote.dialog
+      .showOpenDialog({
+        tilte: "Select a Markdown file to import",
+        properties: ["openFile", "multiSelections"],
+        filters: [{ name: "Markdown files", extensions: ["md"] }],
+      })
+      .then((data) => {
+        // filtered out the path that exists in the files store
+        if (!data || !data.filePaths) {
+          return;
+        }
+        const { filePaths } = data;
+        const unincludedFilePaths = filePaths.filter((path) => {
+          const isIncluded = Object.values(files).find((file) => {
+            return file.path === path;
+          });
+          return !isIncluded;
+        });
+
+        // build file array with file path
+        const importFiles = unincludedFilePaths.map((path, index) => {
+          return {
+            id: uuidv4(),
+            title: basename(path, extname(path)),
+            path,
+          };
+        });
+
+        // build new files object
+        const newFiles = { ...files, ...flattenArray(importFiles) };
+        setFiles(newFiles);
+        saveFilesToStore(newFiles);
+        if (importFiles.length > 0) {
+          remote.dialog.showMessageBox({
+            type: "info",
+            title: `Import ${importFiles.length} files successfully`,
+            message: `Import ${importFiles.length} files successfully`,
+          });
+        }
       });
   };
 
@@ -170,6 +213,7 @@ function App() {
                 text="Import"
                 colorClassName="btn-success"
                 iconName={faFileImport}
+                onBtnClick={filesImport}
               />
             </div>
           </div>
