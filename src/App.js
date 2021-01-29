@@ -94,7 +94,7 @@ function App() {
       const { [id]: value, ...afterDelete } = files;
       tabClose(id);
       setFiles(afterDelete);
-      saveFilesToStore(files);
+      saveFilesToStore(afterDelete);
     });
   };
   const fileNameUpdate = (id, title, isNew) => {
