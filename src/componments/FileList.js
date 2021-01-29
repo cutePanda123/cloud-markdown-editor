@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import useKeyPress from "../hooks/useKeyPress";
 import { KEY_RETURN, KEY_ESCAPE } from "keycode-js";
 import useContextMenu from "../hooks/useContextMenu";
+import { getParentDomNode } from "../utils/helper";
 const { remote } = window.require("electron");
 const { Menu, MenuItem } = remote;
 
@@ -27,22 +28,34 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
     new MenuItem({
       label: "Open",
       click: () => {
-        console.log("open!!!");
+        const parentDomElement = getParentDomNode(clickedItem.current, 'file-item');
+        if (parentDomElement) {
+          onFileClick(parentDomElement.dataset.id);
+        }
       },
     }),
     new MenuItem({
       label: "Rename",
       click: () => {
-        console.log("rename!!!");
+        const parentDomElement = getParentDomNode(clickedItem.current, 'file-item');
+        if (parentDomElement) {
+          const id = parentDomElement.dataset.id;
+          const title = parentDomElement.dataset.title
+          setEditFileId(id);
+          setInputValue(title);
+        }
       },
     }),
     new MenuItem({
       label: "Delete",
       click: () => {
-        console.log("delete!!!");
+        const parentDomElement = getParentDomNode(clickedItem.current, 'file-item');
+        if (parentDomElement) {
+          onFileDelete(parentDomElement.dataset.id);
+        }
       },
     })
-  ], '.file-list');
+  ], '.file-list', [files]);
 
   useEffect(() => {
     if (editFileId === -1) {
@@ -84,6 +97,8 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
         return (
           <li
             key={file.id}
+            data-id={file.id}
+            data-title={file.title}
             className="list-group-item bg-light d-flex align-items-center file-item row mx-0"
           >
             {file.id !== editFileId && !file.isNew && (
