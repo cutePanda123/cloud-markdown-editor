@@ -5,6 +5,9 @@ import { faMarkdown } from "@fortawesome/free-brands-svg-icons";
 import PropTypes from "prop-types";
 import useKeyPress from "../hooks/useKeyPress";
 import { KEY_RETURN, KEY_ESCAPE } from "keycode-js";
+import useContextMenu from "../hooks/useContextMenu";
+const { remote } = window.require("electron");
+const { Menu, MenuItem } = remote;
 
 const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
   const [editFileId, setEditFileId] = useState(-1);
@@ -20,6 +23,26 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
       onFileDelete(editFile.id);
     }
   };
+  const clickedItem = useContextMenu([
+    new MenuItem({
+      label: "Open",
+      click: () => {
+        console.log("open!!!");
+      },
+    }),
+    new MenuItem({
+      label: "Rename",
+      click: () => {
+        console.log("rename!!!");
+      },
+    }),
+    new MenuItem({
+      label: "Delete",
+      click: () => {
+        console.log("delete!!!");
+      },
+    })
+  ], '.file-list');
 
   useEffect(() => {
     if (editFileId === -1) {
