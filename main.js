@@ -1,6 +1,7 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, Menu } = require('electron');
 const isDev = require('electron-is-dev');
 const Store = require('electron-store');
+const menuTemplate = require('./src/menuTemplate');
 
 Store.initRenderer();
 
@@ -18,4 +19,7 @@ app.on('ready', () => {
 
     const endpoint = isDev ? "http://localhost:3000" : 'dummyURL';
     mainWindow.loadURL(endpoint);
+
+    const menu = Menu.buildFromTemplate(menuTemplate);
+    Menu.setApplicationMenu(menu);
 });

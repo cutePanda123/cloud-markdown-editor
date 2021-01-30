@@ -12,12 +12,12 @@ import BottomBtn from "./componments/BottomBtn";
 import TabList from "./componments/TabList";
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { flattenArray, objToArray } from "./utils/helper";
 import fileHelper from "./utils/fileHelper";
 const { join, basename, extname, dirname } = window.require("path");
-const { remote } = window.require("electron");
+const { remote, ipcRenderer } = window.require("electron");
 const Store = window.require("electron-store");
 
 const fileStore = new Store({
@@ -114,12 +114,10 @@ function App() {
         saveFilesToStore(newFiles);
       });
     } else {
-      fileHelper
-        .renameFile(files[id].path, newFilePath)
-        .then(() => {
-          setFiles(newFiles);
-          saveFilesToStore(newFiles);
-        });
+      fileHelper.renameFile(files[id].path, newFilePath).then(() => {
+        setFiles(newFiles);
+        saveFilesToStore(newFiles);
+      });
     }
   };
   const fileSearch = (keyword) => {
@@ -185,6 +183,16 @@ function App() {
         }
       });
   };
+
+  useEffect(() => {
+    const callback = () => {
+      console.log("hello !!!");
+    };
+    ipcRenderer.on("create-new-file", callback);
+    return () => {
+      ipcRenderer.removeListener("create-new-file", callback);
+    };
+  });
 
   const filesArray = objToArray(files);
   const fileList = searchedFiles.length > 0 ? searchedFiles : filesArray;
