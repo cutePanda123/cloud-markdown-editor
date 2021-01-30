@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-const { remote, ipcRenderer } = window.require("electron");
+import { useEffect } from "react";
+const { ipcRenderer } = window.require("electron");
 
 const useIpcRenderer = (actionToCallbackMap) => {
   useEffect(() => {

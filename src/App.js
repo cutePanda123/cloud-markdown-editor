@@ -23,6 +23,7 @@ const Store = window.require("electron-store");
 const fileStore = new Store({
   name: "files-data",
 });
+const settingsStore = new Store({name: 'Settings'});
 const saveFilesToStore = (files) => {
   const fileStoreObj = objToArray(files).reduce((result, file) => {
     const { id, path, title, createdAt } = file;
@@ -43,7 +44,7 @@ function App() {
   const [openedFileIds, setOpenedFileIds] = useState([]);
   const [unsavedFileIds, setUnsavedFileIds] = useState([]);
   const [searchedFiles, setSearchedFiles] = useState([]);
-  const savedLocation = remote.app.getPath("documents");
+  const savedLocation = settingsStore.get('savedFileLocation') || remote.app.getPath("documents");
   const openedFiles = openedFileIds.map((id) => {
     return files[id];
   });

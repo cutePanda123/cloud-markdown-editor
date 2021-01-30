@@ -33,6 +33,7 @@ app.on("ready", () => {
       parent: mainWindow,
       webPreferences: {
         enableRemoteModule: true,
+        nodeIntegration: true,
       },
     };
     const settingsEndpoint = `file://${path.join(
