@@ -2,7 +2,6 @@ import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import FileSearch from "./componments/FileSearch";
 import FileList from "./componments/FileList";
-import defaultFiles from "./data/defaultFiles";
 import {
   faPlus,
   faFileImport,
@@ -16,6 +15,7 @@ import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { flattenArray, objToArray } from "./utils/helper";
 import fileHelper from "./utils/fileHelper";
+import useIpcRenderer from "./hooks/useIpcRenderer";
 const { join, basename, extname, dirname } = window.require("path");
 const { remote, ipcRenderer } = window.require("electron");
 const Store = window.require("electron-store");
@@ -78,6 +78,9 @@ function App() {
     }
   };
   const fileChange = (id, value) => {
+    if (value === files[id].body) {
+      return;
+    }
     const modifiedFile = { ...files[id], body: value };
     setFiles({ ...files, [id]: modifiedFile });
     if (!unsavedFileIds.includes(id)) {
@@ -184,14 +187,10 @@ function App() {
       });
   };
 
-  useEffect(() => {
-    const callback = () => {
-      console.log("hello !!!");
-    };
-    ipcRenderer.on("create-new-file", callback);
-    return () => {
-      ipcRenderer.removeListener("create-new-file", callback);
-    };
+  useIpcRenderer({
+    "create-new-file": fileCreate,
+    "import-file": filesImport,
+    "save-edit-file": fileSave,
   });
 
   const filesArray = objToArray(files);
@@ -250,12 +249,6 @@ function App() {
                 onChange={(value) => {
                   fileChange(activeFile.id, value);
                 }}
-              />
-              <BottomBtn
-                text="Save"
-                colorClassName="btn-primary"
-                iconName={faSave}
-                onBtnClick={fileSave}
               />
             </>
           )}

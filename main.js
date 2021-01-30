@@ -1,25 +1,51 @@
-const { app, BrowserWindow, Menu } = require('electron');
-const isDev = require('electron-is-dev');
-const Store = require('electron-store');
-const menuTemplate = require('./src/menuTemplate');
+const { app, BrowserWindow, Menu, ipcMain } = require("electron");
+const isDev = require("electron-is-dev");
+const Store = require("electron-store");
+const menuTemplate = require("./src/menuTemplate");
+const AppWindow = require("./src/AppWindow");
+const path = require("path");
 
 Store.initRenderer();
 
-let mainWindow;
+let mainWindow, settingsWindow;
 
-app.on('ready', () => {
-    mainWindow = new BrowserWindow({
-        width: 1024,
-        height: 680,
-        webPreferences: {
-            nodeIntegration: true,
-            enableRemoteModule: true
-        }
+app.on("ready", () => {
+  const mainWindowConfig = {
+    width: 1024,
+    height: 680,
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: true,
+    },
+  };
+
+  const endpoint = isDev ? "http://localhost:3000" : "dummyURL";
+  mainWindow = new AppWindow(mainWindowConfig, endpoint);
+  mainWindow.on("closed", () => {
+    mainWindow = null;
+  });
+
+  // hook up main events
+  ipcMain.on("open-settings-window", () => {
+    const settingsWindowConfig = {
+      width: 500,
+      height: 400,
+      parent: mainWindow,
+      webPreferences: {
+        enableRemoteModule: true,
+      },
+    };
+    const settingsEndpoint = `file://${path.join(
+      __dirname,
+      "./settings/settings.html"
+    )}`;
+    settingsWindow = new AppWindow(settingsWindowConfig, settingsEndpoint);
+    settingsWindow.on("closed", () => {
+      settingsWindow = null;
     });
+  });
 
-    const endpoint = isDev ? "http://localhost:3000" : 'dummyURL';
-    mainWindow.loadURL(endpoint);
-
-    const menu = Menu.buildFromTemplate(menuTemplate);
-    Menu.setApplicationMenu(menu);
+  // setup menu context
+  const menu = Menu.buildFromTemplate(menuTemplate);
+  Menu.setApplicationMenu(menu);
 });
