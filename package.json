@@ -43,7 +43,9 @@
     "dev": "concurrently \"wait-on http://localhost:3000 && electron .\" \"cross-env BROWSER=none npm start\"",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
-    "prepack": "npm run build"
+    "prepack": "npm run build && npm run build-main",
+    "predist": "npm run build && npm run build-main",
+    "build-main": "webpack"
   },
   "eslintConfig": {
     "extends": [
@@ -68,7 +70,8 @@
     "cross-env": "^7.0.3",
     "electron": "^11.2.0",
     "electron-builder": "^22.9.1",
-    "wait-on": "^5.2.1"
+    "wait-on": "^5.2.1",
+    "webpack-cli": "^4.4.0"
   },
   "homepage": "./",
   "build": {
@@ -80,10 +83,57 @@
       "build/**/*",
       "node_modules/**/*",
       "settings/**/*",
-      "package.json",
-      "main.js",
-      "./src/menuTemplate.js",
-      "./src/AppWindow.js"
-    ]
+      "package.json"
+    ],
+    "extraMetadata": {
+      "main": "./build/main.js"
+    },
+    "directories": {
+      "buildResources": "assets"
+    },
+    "mac": {
+      "category": "public.app-category.productivity",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "dmg": {
+      "background": "assets/appdmg.png",
+      "icon": "assets/icon.icns",
+      "iconSize": 100,
+      "contents": [
+        {
+          "x": 380,
+          "y": 280,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 110,
+          "y": 280,
+          "type": "file"
+        }
+      ],
+      "window": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    "win": {
+      "target": [
+        "msi",
+        "nsis"
+      ],
+      "icon": "assets/icon.ico",
+      "artifactName": "${productName}-Web-Setup-${version}.${ext}",
+      "publisherName": "cutePanda123"
+    },
+    "nsis": {
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false,
+      "perMachine": false
+    },
+    "linux": {
+      "target": "deb"
+    },
+    "deb": {}
   }
 }
