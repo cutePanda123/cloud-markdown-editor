@@ -2,6 +2,12 @@
   "name": "cloud-markdown-editor",
   "version": "0.1.0",
   "main": "main.js",
+  "description": "A simple cross-platform Markdown editor with cloud storage synchronization.",
+  "author": {
+    "name": "cutePanda123",
+    "email": "https://github.com/cutePanda123"
+  },
+  "repository": "https://github.com/cutePanda123/cloud-markdown-editor",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.34",
@@ -15,6 +21,7 @@
     "bootstrap": "^4.6.0",
     "classnames": "^2.2.6",
     "electron-default-menu": "^1.0.2",
+    "electron-is-dev": "^1.2.0",
     "electron-store": "^7.0.0",
     "jquery": "^3.5.1",
     "keycode-js": "^3.1.0",
@@ -33,7 +40,10 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "ele": "electron .",
-    "dev": "concurrently \"wait-on http://localhost:3000 && electron .\" \"cross-env BROWSER=none npm start\""
+    "dev": "concurrently \"wait-on http://localhost:3000 && electron .\" \"cross-env BROWSER=none npm start\"",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "prepack": "npm run build"
   },
   "eslintConfig": {
     "extends": [
@@ -57,7 +67,23 @@
     "concurrently": "^5.3.0",
     "cross-env": "^7.0.3",
     "electron": "^11.2.0",
-    "electron-is-dev": "^1.2.0",
+    "electron-builder": "^22.9.1",
     "wait-on": "^5.2.1"
+  },
+  "homepage": "./",
+  "build": {
+    "appId": "cloud-markdown-editor",
+    "productName": "cloud-markdown-editor",
+    "copyright": "Copyright © 2021 ${author}",
+    "extends": null,
+    "files": [
+      "build/**/*",
+      "node_modules/**/*",
+      "settings/**/*",
+      "package.json",
+      "main.js",
+      "./src/menuTemplate.js",
+      "./src/AppWindow.js"
+    ]
   }
 }

@@ -19,7 +19,9 @@ app.on("ready", () => {
     },
   };
 
-  const endpoint = isDev ? "http://localhost:3000" : "dummyURL";
+  const endpoint = isDev
+    ? "http://localhost:3000"
+    : `file://${path.join(__dirname, "./build/index.html")}`;
   mainWindow = new AppWindow(mainWindowConfig, endpoint);
   mainWindow.on("closed", () => {
     mainWindow = null;
