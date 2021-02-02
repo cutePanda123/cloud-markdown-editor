@@ -1,13 +1,13 @@
 {
   "name": "cloud-markdown-editor",
-  "version": "0.1.0",
+  "version": "0.1.4",
   "main": "main.js",
-  "description": "A simple cross-platform Markdown editor with cloud storage synchronization.",
+  "description": "A simple, beautiful, and cross-platform Markdown editor with cloud storage synchronization.",
   "author": {
     "name": "cutePanda123",
     "email": "https://github.com/cutePanda123"
   },
-  "repository": "https://github.com/cutePanda123/cloud-markdown-editor",
+  "repository": "https://github.com/cutePanda123/",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.34",
@@ -34,6 +34,7 @@
     "uuid": "^8.3.2",
     "web-vitals": "^0.2.4"
   },
+
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -45,7 +46,9 @@
     "dist": "electron-builder",
     "prepack": "npm run build && npm run build-main",
     "predist": "npm run build && npm run build-main",
-    "build-main": "webpack"
+    "build-main": "webpack",
+    "prerelease": "npm run build && npm run build-main",
+    "release": "cross-env GH_TOKEN={Add GitHub PAT} DEBUG=electron-builder electron-builder --publish=always"
   },
   "eslintConfig": {
     "extends": [
@@ -78,6 +81,12 @@
     "appId": "cloud-markdown-editor",
     "productName": "cloud-markdown-editor",
     "copyright": "Copyright © 2021 ${author}",
+    "publish": {
+      "provider": "github",
+      "releaseType": "draft",
+      "repo": "cloud-markdown-editor",
+      "owner": "cutePanda123"
+    },
     "extends": null,
     "files": [
       "build/**/*",
@@ -132,8 +141,9 @@
       "perMachine": false
     },
     "linux": {
-      "target": "deb"
-    },
-    "deb": {}
+      "target": ["deb"],
+      "executableName": "cloud-markdown-editor",
+      "artifactName": "${productName}-${version}.${ext}"
+    }
   }
 }
