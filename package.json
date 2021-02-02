@@ -1,6 +1,6 @@
 {
   "name": "cloud-markdown-editor",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "main.js",
   "description": "A simple, beautiful, and cross-platform Markdown editor with cloud storage synchronization.",
   "author": {
@@ -34,7 +34,6 @@
     "uuid": "^8.3.2",
     "web-vitals": "^0.2.4"
   },
-
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -48,7 +47,7 @@
     "predist": "npm run build && npm run build-main",
     "build-main": "webpack",
     "prerelease": "npm run build && npm run build-main",
-    "release": "cross-env GH_TOKEN={Add GitHub PAT} DEBUG=electron-builder electron-builder --publish=always"
+    "release": "cross-env GH_TOKEN={Add GitHub PAT} DEBUG=electron-builder electron-builder"
   },
   "eslintConfig": {
     "extends": [
@@ -73,6 +72,7 @@
     "cross-env": "^7.0.3",
     "electron": "^11.2.0",
     "electron-builder": "^22.9.1",
+    "electron-updater": "^4.3.5",
     "wait-on": "^5.2.1",
     "webpack-cli": "^4.4.0"
   },
@@ -141,9 +141,12 @@
       "perMachine": false
     },
     "linux": {
-      "target": ["deb"],
+      "target": [
+        "AppImage"
+      ],
       "executableName": "cloud-markdown-editor",
       "artifactName": "${productName}-${version}.${ext}"
-    }
+    },
+    "deb": {}
   }
 }
