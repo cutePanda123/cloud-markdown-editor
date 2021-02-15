@@ -1,9 +1,9 @@
 const AzureStorageClient = require('./azureStorageClient');
 
 const azureClient = new AzureStorageClient(
-  "REPLACE WITH CONNECTION STRING",
-  "FILE-SHARE-NAME",
-  "FILE-SHARE-FOLDER-NAME",
+  "connection-string",
+  "file-share-name",
+  "file-folder-name",
   (data) => {
     console.log(data);
   },
@@ -13,12 +13,11 @@ const azureClient = new AzureStorageClient(
 );
 
 azureClient.uploadFile(
-  "/home/USERNAME/Documents/FILE-NAME.md",
+  "local-test-file-path",
   (data) => {
-    console.log(data + "!!!!");
     azureClient.downloadFile(
-      "FILE-NAME.md",
-      "/home/USERNAME/Documents/OUTPUT-FILE-NAME.md",
+      "test-file-name",
+      "loccal-downloaded-file-path",
       (data) => {
         console.log(data);
       },
