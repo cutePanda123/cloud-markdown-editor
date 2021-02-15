@@ -2,7 +2,7 @@ const { app, shell, ipcMain } = require("electron");
 const Store = require("electron-store");
 const settingsStore = new Store({ name: "Settings" });
 
-const qiniuIsConfiged = ["accessKey", "secretKey", "bucketName"].every(
+const isCloudStorageConfiged = ["accessKey", "secretKey", "bucketName"].every(
   (key) => !!settingsStore.get(key)
 );
 let enableAutoSync = settingsStore.get("enableAutoSync");
@@ -91,7 +91,7 @@ let template = [
       {
         label: "AutoSync",
         type: "checkbox",
-        enabled: qiniuIsConfiged,
+        enabled: isCloudStorageConfiged,
         checked: enableAutoSync,
         click: () => {
           settingsStore.set("enableAutoSync", !enableAutoSync);
@@ -99,14 +99,14 @@ let template = [
       },
       {
         label: "Sync All",
-        enabled: qiniuIsConfiged,
+        enabled: isCloudStorageConfiged,
         click: () => {
           ipcMain.emit("upload-all-to-qiniu");
         },
       },
       {
         label: "Download",
-        enabled: qiniuIsConfiged,
+        enabled: isCloudStorageConfiged,
         click: () => {},
       },
     ],
