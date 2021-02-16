@@ -107,6 +107,7 @@ app.on("ready", () => {
       "./settings/settings.html"
     )}`;
     settingsWindow = new AppWindow(settingsWindowConfig, settingsEndpoint);
+    settingsWindow.removeMenu();
     settingsWindow.on("closed", () => {
       settingsWindow = null;
     });
