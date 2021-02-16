@@ -1,6 +1,7 @@
 const { remote } = require("electron");
 const Store = require('electron-store');
 const settingsStore = new Store({name: 'Settings'});
+const azureStorageInputIds = ['#fileShareName', '#fileShareFolderName', '#connectionString'];
 const $ = (selector) => {
     const results = document.querySelectorAll(selector);
     return results.length > 1 ? results : results[0];
@@ -11,6 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (savedLocation) {
         $('#saved-file-location').value = savedLocation;
     }
+    azureStorageInputIds.forEach(selector => {
+        const storeKey = selector.substr(1);
+        if (settingsStore.get(storeKey)) {
+            $(selector).value = settingsStore.get(storeKey);
+        }
+    });
     $('#select-new-location').addEventListener('click', () => {
         remote.dialog.showOpenDialog({
             properties: ['openDirectory'],
@@ -24,7 +31,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    $('#settings-form').addEventListener('submit', () => {
+    $('#settings-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        azureStorageInputIds.forEach(selector => {
+            if ($(selector)) {
+                let {id, value} = $(selector);
+                settingsStore.set(id, value ? value : '');
+            }
+        });
         settingsStore.set('savedFileLocation', savedLocation);
         remote.getCurrentWindow().close();
     });
