@@ -9,6 +9,7 @@ const path = require("path");
 Store.initRenderer();
 
 let mainWindow, settingsWindow;
+const settingsStore = new Store({ name: "Settings" });
 
 app.on("ready", () => {
   autoUpdater.autoDownload = false;
@@ -91,6 +92,10 @@ app.on("ready", () => {
     mainWindow = null;
   });
 
+  // setup menu context
+  let menu = Menu.buildFromTemplate(menuTemplate);
+  Menu.setApplicationMenu(menu);
+
   // hook up main events
   ipcMain.on("open-settings-window", () => {
     const settingsWindowConfig = {
@@ -112,8 +117,24 @@ app.on("ready", () => {
       settingsWindow = null;
     });
   });
-
-  // setup menu context
-  const menu = Menu.buildFromTemplate(menuTemplate);
-  Menu.setApplicationMenu(menu);
+  ipcMain.on("config-is-saved", () => {
+    // the menu index is different from mac os to windows os
+    let cloudOperationsMenu =
+      process.platform == "darwin" ? menu.items[3] : menu.items[2];
+    const switchItems = (toggle) => {
+      [1, 2, 3].forEach((index) => {
+        cloudOperationsMenu.submenu.items[index].enabled = toggle;
+      });
+    };
+    const isCloudStorageConfiged = [
+      "fileShareName",
+      "fileShareFolderName",
+      "connectionString",
+    ].every((key) => !!settingsStore.get(key));
+    if (isCloudStorageConfiged) {
+      switchItems(true);
+    } else {
+      switchItems(false);
+    }
+  });
 });

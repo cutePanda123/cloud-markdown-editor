@@ -1,4 +1,4 @@
-const { remote } = require("electron");
+const { remote, ipcRenderer } = require("electron");
 const Store = require('electron-store');
 const settingsStore = new Store({name: 'Settings'});
 const azureStorageInputIds = ['#fileShareName', '#fileShareFolderName', '#connectionString'];
@@ -40,6 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         settingsStore.set('savedFileLocation', savedLocation);
+
+        // sent a event to main process to notice that the cloud storage config 
+        // was added
+        ipcRenderer.send('config-is-saved');
         remote.getCurrentWindow().close();
     });
 
