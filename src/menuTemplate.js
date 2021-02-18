@@ -2,10 +2,12 @@ const { app, shell, ipcMain } = require("electron");
 const Store = require("electron-store");
 const settingsStore = new Store({ name: "Settings" });
 
-const isCloudStorageConfiged = ["accessKey", "secretKey", "bucketName"].every(
-  (key) => !!settingsStore.get(key)
-);
-let enableAutoSync = settingsStore.get("enableAutoSync");
+const isCloudStorageConfiged = [
+  "fileShareName",
+  "fileShareFolderName",
+  "connectionString",
+].every((key) => !!settingsStore.get(key));
+let isAutoSyncEnabled = settingsStore.get("isAutoSyncEnabled");
 let template = [
   {
     label: "File",
@@ -92,9 +94,9 @@ let template = [
         label: "AutoSync",
         type: "checkbox",
         enabled: isCloudStorageConfiged,
-        checked: enableAutoSync,
+        checked: isAutoSyncEnabled,
         click: () => {
-          settingsStore.set("enableAutoSync", !enableAutoSync);
+          settingsStore.set("isAutoSyncEnabled", !isAutoSyncEnabled);
         },
       },
       {
