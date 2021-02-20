@@ -1,15 +1,29 @@
-const { app, BrowserWindow, Menu, ipcMain, dialog } = require("electron");
+const { app, Menu, ipcMain, dialog } = require("electron");
 const isDev = require("electron-is-dev");
 const { autoUpdater } = require("electron-updater");
 const Store = require("electron-store");
 const menuTemplate = require("./src/menuTemplate");
 const AppWindow = require("./src/AppWindow");
 const path = require("path");
-
+const { AzureStorageClient } = require("./src/storage/azure");
 Store.initRenderer();
 
 let mainWindow, settingsWindow;
 const settingsStore = new Store({ name: "Settings" });
+
+const createAzureStorageClient = (successCallback, errorCallback) => {
+  const fileShareName = settingsStore.get("fileShareName");
+  const fileShareFolderName = settingsStore.get("fileShareFolderName");
+  const connectionString = settingsStore.get("connectionString");
+
+  return new AzureStorageClient(
+    connectionString,
+    fileShareName,
+    fileShareFolderName,
+    successCallback,
+    errorCallback
+  );
+};
 
 app.on("ready", () => {
   autoUpdater.autoDownload = false;
@@ -137,4 +151,26 @@ app.on("ready", () => {
       switchItems(false);
     }
   });
+  ipcMain.on("upload-file", (event, data) => {
+    const successCallback = (result) => {
+      console.log("Upload finished", result);
+    };
+    const errorCallback = (error) => {
+      console.log(error);
+      dialog.showErrorBox(
+        "Upload failed",
+        "Please check storage config info or network connectivity"
+      );
+    };
+    try {
+      const storageClient = createAzureStorageClient(successCallback, errorCallback);
+      storageClient.uploadFile(
+        data.path,
+        successCallback,
+        errorCallback
+      );
+    } catch (error) {
+      errorCallback(error);
+    }
+  })
 });

@@ -2,16 +2,12 @@ import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import FileSearch from "./componments/FileSearch";
 import FileList from "./componments/FileList";
-import {
-  faPlus,
-  faFileImport,
-  faSave,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faFileImport } from "@fortawesome/free-solid-svg-icons";
 import BottomBtn from "./componments/BottomBtn";
 import TabList from "./componments/TabList";
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { flattenArray, objToArray } from "./utils/helper";
 import fileHelper from "./utils/fileHelper";
@@ -19,11 +15,18 @@ import useIpcRenderer from "./hooks/useIpcRenderer";
 const { join, basename, extname, dirname } = window.require("path");
 const { remote, ipcRenderer } = window.require("electron");
 const Store = window.require("electron-store");
+const isAutoSyncedEnabled = () =>
+  [
+    "fileShareName",
+    "fileShareFolderName",
+    "connectionString",
+    "isAutoSyncEnabled",
+  ].every((key) => !!settingsStore.get(key));
 
 const fileStore = new Store({
   name: "files-data",
 });
-const settingsStore = new Store({name: 'Settings'});
+const settingsStore = new Store({ name: "Settings" });
 const saveFilesToStore = (files) => {
   const fileStoreObj = objToArray(files).reduce((result, file) => {
     const { id, path, title, createdAt } = file;
@@ -44,7 +47,8 @@ function App() {
   const [openedFileIds, setOpenedFileIds] = useState([]);
   const [unsavedFileIds, setUnsavedFileIds] = useState([]);
   const [searchedFiles, setSearchedFiles] = useState([]);
-  const savedLocation = settingsStore.get('savedFileLocation') || remote.app.getPath("documents");
+  const savedLocation =
+    settingsStore.get("savedFileLocation") || remote.app.getPath("documents");
   const openedFiles = openedFileIds.map((id) => {
     return files[id];
   });
@@ -140,8 +144,12 @@ function App() {
     setFiles({ ...files, [newId]: newFile });
   };
   const fileSave = () => {
-    fileHelper.writeFile(activeFile.path, activeFile.body).then(() => {
+    const { path, body, title } = activeFile;
+    fileHelper.writeFile(path, body).then(() => {
       setUnsavedFileIds(unsavedFileIds.filter((id) => id !== activeFileId));
+      if (isAutoSyncedEnabled()) {
+        ipcRenderer.send("upload-file", { path });
+      }
     });
   };
 
