@@ -154,6 +154,7 @@ app.on("ready", () => {
   ipcMain.on("upload-file", (event, data) => {
     const successCallback = (result) => {
       console.log("Upload finished", result);
+      mainWindow.webContents.send('file-uploaded');
     };
     const errorCallback = (error) => {
       console.log(error);

@@ -30,3 +30,19 @@
 .no-border {
   border-radius: 0 !important;
 }
+
+.right-panel {
+  position: relative;
+}
+
+.CodeMirror-scroll {
+  height: 600px !important;
+}
+
+.cloud-sync-state {
+  font-size: 12px;
+  color: #959694;
+  position: absolute;
+  bottom: 12px;
+  left: 10px;
+}

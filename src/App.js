@@ -2,14 +2,18 @@ import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import FileSearch from "./componments/FileSearch";
 import FileList from "./componments/FileList";
-import { faPlus, faFileImport } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlus,
+  faFileImport,
+  faFileUpload,
+} from "@fortawesome/free-solid-svg-icons";
 import BottomBtn from "./componments/BottomBtn";
 import TabList from "./componments/TabList";
 import SimpleMDE from "react-simplemde-editor";
 import "easymde/dist/easymde.min.css";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { flattenArray, objToArray } from "./utils/helper";
+import { flattenArray, objToArray, formatTimeString } from "./utils/helper";
 import fileHelper from "./utils/fileHelper";
 import useIpcRenderer from "./hooks/useIpcRenderer";
 const { join, basename, extname, dirname } = window.require("path");
@@ -29,12 +33,14 @@ const fileStore = new Store({
 const settingsStore = new Store({ name: "Settings" });
 const saveFilesToStore = (files) => {
   const fileStoreObj = objToArray(files).reduce((result, file) => {
-    const { id, path, title, createdAt } = file;
+    const { id, path, title, createdAt, updatedAt, isSynced } = file;
     result[id] = {
       id,
       path,
       title,
       createdAt,
+      updatedAt,
+      isSynced,
     };
     return result;
   }, {});
@@ -196,10 +202,23 @@ function App() {
       });
   };
 
+  const fileUpload = () => {
+    const { id } = activeFile;
+    const modifiedFile = {
+      ...files[id],
+      isSynced: true,
+      updatedAt: new Date().getTime(),
+    };
+    const newFiles = { ...files, [id]: modifiedFile };
+    setFiles(newFiles);
+    saveFilesToStore(newFiles);
+  };
+
   useIpcRenderer({
     "create-new-file": fileCreate,
     "import-file": filesImport,
     "save-edit-file": fileSave,
+    "file-uploaded": fileUpload,
   });
 
   const filesArray = objToArray(files);
@@ -259,6 +278,12 @@ function App() {
                   fileChange(activeFile.id, value);
                 }}
               />
+              {activeFile.isSynced && (
+                <span className="cloud-sync-state">
+                  Synced succeeded, last synced at:{" "}
+                  {formatTimeString(activeFile.updatedAt)}
+                </span>
+              )}
             </>
           )}
         </div>

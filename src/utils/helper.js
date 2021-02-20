@@ -19,3 +19,8 @@ export const getParentDomNode = (node, parentClassName) => {
     }
     return false;
 };
+
+export const formatTimeString = (time) => {
+    const date = new Date(time);
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+};
