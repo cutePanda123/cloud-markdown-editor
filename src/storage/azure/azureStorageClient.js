@@ -4,48 +4,51 @@ const path = require("path");
 
 class AzureStorageClient {
   constructor(
-    connectinString,
+    connectionString,
     fileShareName,
     fileShareFolderName,
-    errorCallback,
-    successCallback
+    successCallback,
+    errorCallback
   ) {
     this.fileShareFolderName = fileShareFolderName;
     this.fileShareName = fileShareName;
-    this.fileService = azure.createFileService(connectinString);
-    this.fileService.createShareIfNotExists(
-      this.fileShareName,
-      function (error, result, response) {
-        if (!error) {
-          errorCallback && errorCallback(error);
-        } else {
-          successCallback && successCallback(result);
+    try {
+      this.fileService = azure.createFileService(connectionString);
+      this.fileService.createShareIfNotExists(
+        this.fileShareName,
+        (error, result, response) => {
+          if (error) {
+            errorCallback && errorCallback(error);
+          } else {
+            this.fileService.createDirectoryIfNotExists(
+              this.fileShareName,
+              this.fileShareFolderName,
+              function (error, result, response) {
+                if (error) {
+                  errorCallback && errorCallback(error);
+                } else {
+                  successCallback && successCallback(result);
+                }
+              }
+            );
+          }
         }
-      }
-    );
-
-    this.fileService.createDirectoryIfNotExists(
-      this.fileShareName,
-      this.fileShareFolderName,
-      function (error, result, response) {
-        if (!error) {
-          errorCallback(error);
-        } else {
-          successCallback(result);
-        }
-      }
-    );
+      );
+    } catch (error) {
+      errorCallback && errorCallback(error);
+      return;
+    }
   }
 
   uploadFile(filePath, successCallback, errorCallback) {
-    const fileName = path.parse(filePath).base;
-    console.log(fileName);
+    const cloudFileName = path.parse(filePath).base;
+    //console.log(fileName);
     this.fileService.createFileFromLocalFile(
       this.fileShareName,
       this.fileShareFolderName,
-      fileName,
+      cloudFileName,
       filePath,
-      function (error, result, response) {
+      (error, result, response) => {
         if (error) {
           errorCallback && errorCallback(error);
         } else {
@@ -61,7 +64,7 @@ class AzureStorageClient {
       this.fileShareFolderName,
       cloudFileName,
       fs.createWriteStream(localFilePath),
-      function (error, result, response) {
+      (error, result, response) => {
         if (error) {
           errorCallback && errorCallback(error);
         } else {
