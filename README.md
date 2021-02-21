@@ -34,8 +34,9 @@
 <br />
 
 ## About The Project
-<h2>
-A simple, beautiful, and cross-platform Markdown editor with cloud storage synchronization.</h2>
+
+A simple, beautiful, and cross-platform Markdown editor with cloud storage synchronization.
+<br/>
 <img src="./images/edit-view.PNG" alt="drawing" width="600"/>
 <br/>
 
