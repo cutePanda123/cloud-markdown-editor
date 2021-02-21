@@ -35,11 +35,11 @@
 
 ## About The Project
 
-A simple, beautiful, and cross-platform Markdown editor with cloud storage synchronization.
+<h4>A simple, beautiful, and cross-platform Markdown editor with cloud storage synchronization.</h4>
 <br/>
 <img src="./images/edit-view.PNG" alt="drawing" width="600"/>
 <br/>
-
+<br/>
 ### Features
 - Cross-platform support: Edit a Markdown on different OS: Mac, Windows, and Linux
 - Basic features: Read and edit standard Markdown files
@@ -83,15 +83,22 @@ A simple, beautiful, and cross-platform Markdown editor with cloud storage synch
 
 * Real-time Preview
   <br/>
-  <img src="./images/preview-view.PNG" alt="drawing" width="500"/>
+  <br/>
+  <img src="./images/preview-view.PNG" alt="drawing" width="600"/>
+  <br/>
+  <br/>
 * Side-by-side Preview
   <br/>
-  <img src="./images/sdie-by-side-preview.PNG" alt="drawing" width="500"/>
+  <br/>
+  <img src="./images/sdie-by-side-preview.PNG" alt="drawing" width="600"/>
+  <br/>
+  <br/>
 * Cloud Auto-sync
   <br/>
-  <img src="./images/cloud-storage-setup.PNG" alt="drawing" width="500"/>
-  <br />
-
+  <br/>
+  <img src="./images/cloud-storage-setup.PNG" alt="drawing" width="600"/>
+  <br/>
+  <br/>
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
