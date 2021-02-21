@@ -54,6 +54,7 @@ A simple, beautiful, and cross-platform Markdown editor with cloud storage synch
 * [Electron](https://www.electronjs.org/)
 * [React](https://reactjs.org/)
 * [SimpleMDE](https://github.com/sparksuite/simplemde-markdown-editor)
+* [electron-builder](https://www.electron.build/)
 * [Microsoft Azure Storage](https://azure.microsoft.com/en-us/services/storage/)
 
 <br/>
