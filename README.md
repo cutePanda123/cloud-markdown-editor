@@ -40,6 +40,8 @@
 <img src="./images/edit-view.PNG" alt="drawing" width="600"/>
 <br/>
 <br/>
+
+
 ### Features
 - Cross-platform support: Edit a Markdown on different OS: Mac, Windows, and Linux
 - Basic features: Read and edit standard Markdown files
