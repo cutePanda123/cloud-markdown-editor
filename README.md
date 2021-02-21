@@ -43,9 +43,9 @@
 
 
 ### Features
-- Cross-platform support: Edit a Markdown on different OS: Mac, Windows, and Linux
-- Basic features: Read and edit standard Markdown files
-- Other useful editor features: File search, side-by-side preview, image insert, code blocks, list insert, text bold, italic, quote...
+- Cross-platform support: Edit a Markdown on different OS: Mac, Windows, and Linux.
+- Basic features: Read and edit standard Markdown files.
+- Other useful editor features: File search, side-by-side preview, image insert, code blocks, list insert, text bold, italic, quote, etc.
 - Cloud auto-sync: Automatically upload files to cloud storage. Azure is only supported for now, AWS and Dropbox supports are in-progress.
 - Auto-upgrade: Automatic user notification for version upgrade.
 
