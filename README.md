@@ -57,7 +57,7 @@
 * [React](https://reactjs.org/)
 * [SimpleMDE](https://github.com/sparksuite/simplemde-markdown-editor)
 * [electron-builder](https://www.electron.build/)
-* [Microsoft Azure Storage](https://azure.microsoft.com/en-us/services/storage/)
+* [Microsoft Azure Storage SDK](https://github.com/Azure/azure-storage-node)
 
 <br/>
 
