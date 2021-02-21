@@ -7,7 +7,7 @@
 
 <br/>
 <p align="center">
-  <h1 align="center">Markdown editor with cloud storage auto-synchronization</h1>
+  <h1 align="center">Cloud-Sync Markdown Editor</h1>
 </p>
 
 
