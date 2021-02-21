@@ -82,13 +82,13 @@ A simple, beautiful, and cross-platform Markdown editor with cloud storage synch
 
 * Real-time Preview
   <br/>
-  <img src="./images/preview-view.PNG" alt="drawing" width="300"/>
+  <img src="./images/preview-view.PNG" alt="drawing" width="500"/>
 * Side-by-side Preview
   <br/>
-  <img src="./images/sdie-by-side-preview.PNG" alt="drawing" width="300"/>
+  <img src="./images/sdie-by-side-preview.PNG" alt="drawing" width="500"/>
 * Cloud Auto-sync
   <br/>
-  <img src="./images/cloud-storage-setup.PNG" alt="drawing" width="300"/>
+  <img src="./images/cloud-storage-setup.PNG" alt="drawing" width="500"/>
   <br />
 
 ## License
