@@ -1,6 +1,6 @@
 {
   "name": "cloud-markdown-editor",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "main": "main.js",
   "description": "A simple, beautiful, and cross-platform Markdown editor with cloud storage synchronization.",
   "author": {
@@ -143,11 +143,10 @@
     },
     "linux": {
       "target": [
-        "AppImage"
+        "deb"
       ],
       "executableName": "cloud-markdown-editor",
       "artifactName": "${productName}-${version}.${ext}"
-    },
-    "deb": {}
+    }
   }
 }
