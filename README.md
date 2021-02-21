@@ -86,9 +86,9 @@ A simple, beautiful, and cross-platform Markdown editor with cloud storage synch
   <br/>
   <img src="./images/sdie-by-side-preview.PNG" alt="drawing" width="300"/>
 * Cloud Auto-sync
-<br/>
-<img src="./images/cloud-storage-setup.PNG" alt="drawing" width="300"/>
-<br />
+  <br/>
+  <img src="./images/cloud-storage-setup.PNG" alt="drawing" width="300"/>
+  <br />
 
 ## License
 
