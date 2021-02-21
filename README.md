@@ -24,7 +24,7 @@
     <li>
       <a href="#development">Development</a>
     </li>
-    <li><a href="#highlighted-features">Highlighted-features</a></li>
+    <li><a href="#highlighted-features">Highlighted Features</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
   </ol>
