@@ -1,13 +1,13 @@
 {
   "name": "cloud-markdown-editor",
-  "version": "0.1.6",
+  "version": "0.1.8",
   "main": "main.js",
   "description": "A simple, beautiful, and cross-platform Markdown editor with cloud storage synchronization.",
   "author": {
     "name": "cutePanda123",
-    "email": "https://github.com/cutePanda123"
+    "email": "placeholder@email.com"
   },
-  "repository": "https://github.com/cutePanda123/",
+  "repository": "https://github.com/cutePanda123/cloud-markdown-editor",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.34",
@@ -48,7 +48,7 @@
     "predist": "npm run build && npm run build-main",
     "build-main": "webpack",
     "prerelease": "npm run build && npm run build-main",
-    "release": "cross-env GH_TOKEN={Add GitHub PAT} DEBUG=electron-builder electron-builder"
+    "release": "cross-env GH_TOKEN={GitHub_PAT} DEBUG=electron-builder electron-builder"
   },
   "eslintConfig": {
     "extends": [
