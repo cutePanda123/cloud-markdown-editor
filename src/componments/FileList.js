@@ -8,7 +8,7 @@ import { KEY_RETURN, KEY_ESCAPE } from "keycode-js";
 import useContextMenu from "../hooks/useContextMenu";
 import { getParentDomNode } from "../utils/helper";
 const { remote } = window.require("electron");
-const { Menu, MenuItem } = remote;
+const { MenuItem } = remote;
 
 const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
   const [editFileId, setEditFileId] = useState(-1);
@@ -20,7 +20,7 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
     const editFile = files.find((file) => file.id === editFileId);
     setEditFileId(-1);
     setInputValue("");
-    if (editFile.isNew) {
+    if (editFile && editFile.isNew) {
       onFileDelete(editFile.id);
     }
   };
@@ -149,8 +149,8 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
                 <button
                   type="button"
                   className="icon-button col-2"
-                  onClick={(file) => {
-                    closeEdit(file);
+                  onClick={() => {
+                    closeEdit(file.id);
                   }}
                 >
                   <FontAwesomeIcon size="lg" icon={faTimes} title="Close" />

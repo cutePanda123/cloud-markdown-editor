@@ -5,7 +5,6 @@ import FileList from "./componments/FileList";
 import {
   faPlus,
   faFileImport,
-  faFileUpload,
 } from "@fortawesome/free-solid-svg-icons";
 import BottomBtn from "./componments/BottomBtn";
 import TabList from "./componments/TabList";
