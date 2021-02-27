@@ -1,9 +1,16 @@
-const AzureStorageClient = require('./azureStorageClient');
+const prompt = require("prompt-sync")();
+const AzureStorageClient = require("./azureStorageClient");
+const connectionString = prompt("Enter Azure Storage connection string:");
+const fileShareName = prompt("Enter Azure Storage file share name:");
+const fileFolderName = prompt("Enter Azure Storage file share folder name:");
+const fileName = prompt("Enter target file name:");
+const localFilePath = prompt("Enter the local file path that you want to upload:");
+const localFileDownloadPath = prompt("Enter the local file path that you want to save the downloaded files:");
 
 const azureClient = new AzureStorageClient(
-  "connection-string",
-  "file-share-name",
-  "file-folder-name",
+  connectionString,
+  fileShareName,
+  fileFolderName,
   (data) => {
     console.log(data);
   },
@@ -13,11 +20,11 @@ const azureClient = new AzureStorageClient(
 );
 
 azureClient.uploadFile(
-  "local-test-file-path",
+  localFilePath,
   (data) => {
     azureClient.downloadFile(
-      "test-file-name",
-      "loccal-downloaded-file-path",
+      fileName,
+      localFileDownloadPath,
       (data) => {
         console.log(data);
       },
@@ -28,5 +35,16 @@ azureClient.uploadFile(
   },
   (error) => {
     console.log(error);
+  }
+);
+
+azureClient.isExistingFile(fileName).then(
+  (res) => {
+    console.log("file exists");
+    console.log(res);
+  },
+  (err) => {
+    console.log("file does not exist");
+    console.log(err);
   }
 );

@@ -27,6 +27,7 @@
     "keycode-js": "^3.1.0",
     "node-sass": "^4.14.1",
     "popper.js": "^1.16.1",
+    "prompt-sync": "^4.2.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-scripts": "4.0.1",

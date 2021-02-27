@@ -73,6 +73,27 @@ class AzureStorageClient {
       }
     );
   }
+
+  isExistingFile(fileName) {
+    return new Promise((resolve, reject) => {
+      this.fileService.getFileProperties(
+        this.fileShareName,
+        this.fileShareFolderName,
+        fileName,
+        this.handleCallback(resolve, reject)
+      );
+    });
+  }
+
+  handleCallback(resolve, reject) {
+    return (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    };
+  }
 }
 
 module.exports = AzureStorageClient;
