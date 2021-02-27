@@ -1,5 +1,6 @@
 const prompt = require("prompt-sync")();
 const AzureStorageClient = require("./azureStorageClient");
+
 const connectionString = prompt("Enter Azure Storage connection string:");
 const fileShareName = prompt("Enter Azure Storage file share name:");
 const fileFolderName = prompt("Enter Azure Storage file share folder name:");
