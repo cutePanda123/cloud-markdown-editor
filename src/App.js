@@ -2,10 +2,7 @@ import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import FileSearch from "./componments/FileSearch";
 import FileList from "./componments/FileList";
-import {
-  faPlus,
-  faFileImport,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faFileImport } from "@fortawesome/free-solid-svg-icons";
 import BottomBtn from "./componments/BottomBtn";
 import TabList from "./componments/TabList";
 import SimpleMDE from "react-simplemde-editor";
@@ -62,11 +59,16 @@ function App() {
   const fileClick = (id) => {
     setActiveFileId(id);
     const currentFile = files[id];
-    if (!currentFile.isLoaded) {
-      fileHelper.readFile(currentFile.path).then((value) => {
-        const newFile = { ...files[id], body: value, isLoaded: true };
-        setFiles({ ...files, [id]: newFile });
-      });
+    const { title, path, isLoaded } = currentFile;
+    if (!isLoaded) {
+      if (isAutoSyncedEnabled()) {
+        ipcRenderer.send("download-file", { key: `${title}.md`, path, id });
+      } else {
+        fileHelper.readFile(currentFile.path).then((value) => {
+          const newFile = { ...files[id], body: value, isLoaded: true };
+          setFiles({ ...files, [id]: newFile });
+        });
+      }
     }
     if (!openedFileIds.includes(id)) {
       setOpenedFileIds([...openedFileIds, id]);
@@ -213,11 +215,41 @@ function App() {
     saveFilesToStore(newFiles);
   };
 
+  const activeFileDownloaded = (event, message) => {
+    const currentFile = files[message.id];
+    const { id, path } = currentFile;
+    fileHelper.readFile(path).then((value) => {
+      let newFile;
+      if (message.status === "download-success") {
+        newFile = {
+          ...files[id],
+          body: value,
+          isLoaded: true,
+          isSynced: true,
+          updatedAt: new Date().getTime(),
+        };
+      } else {
+        newFile = {
+          ...files[id],
+          body: value,
+          isLoaded: true,
+        };
+      }
+      const newFiles = {
+        ...files,
+        [id]: newFile,
+      };
+      setFiles(newFiles);
+      saveFilesToStore(newFiles);
+    });
+  };
+
   useIpcRenderer({
     "create-new-file": fileCreate,
     "import-file": filesImport,
     "save-edit-file": fileSave,
     "file-uploaded": fileUpload,
+    "file-downloaded": activeFileDownloaded,
   });
 
   const filesArray = objToArray(files);

@@ -10,6 +10,9 @@ Store.initRenderer();
 
 let mainWindow, settingsWindow;
 const settingsStore = new Store({ name: "Settings" });
+const fileStore = new Store({
+  name: "files-data",
+});
 
 const createAzureStorageClient = (successCallback, errorCallback) => {
   const fileShareName = settingsStore.get("fileShareName");
@@ -28,8 +31,9 @@ const createAzureStorageClient = (successCallback, errorCallback) => {
 app.on("ready", () => {
   autoUpdater.autoDownload = false;
   if (isDev) {
-    autoUpdater.updateConfigPath = path.join(__dirname, "dev-app-update.yml");
-    autoUpdater.checkForUpdates();
+    // uncomment this to local test your auto-update functionality
+    //autoUpdater.updateConfigPath = path.join(__dirname, "dev-app-update.yml");
+    //autoUpdater.checkForUpdates();
   } else {
     autoUpdater.checkForUpdatesAndNotify();
   }
@@ -131,6 +135,48 @@ app.on("ready", () => {
       settingsWindow = null;
     });
   });
+
+  ipcMain.on("download-file", (event, data) => {
+    try {
+      const logFun = (data) => {
+        console.log(data);
+      };
+      const storageClient = createAzureStorageClient(logFun, logFun);
+      const fileObjs = fileStore.get("files");
+      const { key, path, id } = data;
+      storageClient.isExistingFile(data.key).then(
+        (res) => {
+          console.log(res);
+          const serverFileUpdatedTime = new Date(res.lastModified).getTime();
+          const localFileUpdatedTime = fileObjs[id].updatedAt;
+          if (
+            !localFileUpdatedTime ||
+            serverFileUpdatedTime > localFileUpdatedTime
+          ) {
+            mainWindow.webContents.send("file-downloaded", {
+              status: "download-success",
+              id,
+            });
+          } else {
+            mainWindow.webContents.send("file-downloaded", {
+              status: "no-new-file",
+              id,
+            });
+          }
+        },
+        (err) => {
+          console.log(err);
+          mainWindow.webContents.send("file-downloaded", {
+            status: "no-file",
+            id,
+          });
+        }
+      );
+    } catch (error) {
+      logFun(error);
+    }
+  });
+
   ipcMain.on("config-is-saved", () => {
     // the menu index is different from mac os to windows os
     let cloudOperationsMenu =
@@ -154,7 +200,7 @@ app.on("ready", () => {
   ipcMain.on("upload-file", (event, data) => {
     const successCallback = (result) => {
       console.log("Upload finished", result);
-      mainWindow.webContents.send('file-uploaded');
+      mainWindow.webContents.send("file-uploaded");
     };
     const errorCallback = (error) => {
       console.log(error);
@@ -164,14 +210,13 @@ app.on("ready", () => {
       );
     };
     try {
-      const storageClient = createAzureStorageClient(successCallback, errorCallback);
-      storageClient.uploadFile(
-        data.path,
+      const storageClient = createAzureStorageClient(
         successCallback,
         errorCallback
       );
+      storageClient.uploadFile(data.path, successCallback, errorCallback);
     } catch (error) {
       errorCallback(error);
     }
-  })
+  });
 });
