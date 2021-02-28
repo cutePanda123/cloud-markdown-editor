@@ -247,6 +247,20 @@ function App() {
     });
   };
 
+  const filesUploaded = () => {
+    const newFiles = objToArray(files).reduce((result, file) => {
+      const currentTime = new Date().getTime();
+      result[file.id] = {
+        ...files[file.id],
+        isSynced: true,
+        updatedAt: currentTime
+      };
+      return result;
+    }, {});
+    setFiles(newFiles);
+    saveFilesToStore(newFiles);
+  }
+
   useIpcRenderer({
     "create-new-file": fileCreate,
     "import-file": filesImport,
@@ -255,7 +269,8 @@ function App() {
     "file-downloaded": activeFileDownloaded,
     'loading-status': (message, status) => {
       setLoading(status);
-    }
+    },
+    'files-uploaded': filesUploaded
   });
 
   const filesArray = objToArray(files);

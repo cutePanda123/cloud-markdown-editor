@@ -177,12 +177,48 @@ app.on("ready", () => {
     }
   });
 
-  ipcMain.on('upload-all', () => {
-    mainWindow.webContents.send('loading-status', true);
-    setTimeout(() => {
-      mainWindow.webContents.send('loading-status', false);
-    }, 2000);
-  })
+  ipcMain.on("upload-all", () => {
+    mainWindow.webContents.send("loading-status", true);
+    const fileObjs = fileStore.get("files") || {};
+    const logCallback = (data) => {
+      console.log(data);
+    };
+    let storageClient;
+    try {
+      storageClient = createAzureStorageClient(logCallback, logCallback);
+    } catch (error) {
+      logCallback(error);
+      dialog.showErrorBox(
+        "Upload failed",
+        "Please check cloud storage config information"
+      );
+      return;
+    }
+    const uploadPromiseArray = Object.keys(fileObjs).map((key) => {
+      const file = fileObjs[key];
+      return storageClient.uploadFile(file.path);
+    });
+    Promise.all(uploadPromiseArray)
+      .then((res) => {
+        logCallback(res);
+        dialog.showMessageBox({
+          type: "info",
+          title: `Uploaded ${uploadPromiseArray.length} files`,
+          message: `Uploaded ${uploadPromiseArray.length} files`,
+        });
+        mainWindow.webContents.send("files-uploaded");
+      })
+      .catch(() => {
+        logCallback(error);
+        dialog.showErrorBox(
+          "Upload failed",
+          "Please check cloud storage config information"
+        );
+      })
+      .finally(() => {
+        mainWindow.webContents.send("loading-status", false);
+      });
+  });
 
   ipcMain.on("config-is-saved", () => {
     // the menu index is different from mac os to windows os
