@@ -20,9 +20,8 @@ const azureClient = new AzureStorageClient(
   }
 );
 
-azureClient.uploadFile(
-  localFilePath,
-  (data) => {
+azureClient.uploadFile(localFilePath).then(
+  (res) => {
     azureClient.downloadFile(
       fileName,
       localFileDownloadPath,

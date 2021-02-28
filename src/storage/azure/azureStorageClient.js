@@ -40,22 +40,17 @@ class AzureStorageClient {
     }
   }
 
-  uploadFile(filePath, successCallback, errorCallback) {
+  uploadFile(filePath) {
     const cloudFileName = path.parse(filePath).base;
-    //console.log(fileName);
-    this.fileService.createFileFromLocalFile(
-      this.fileShareName,
-      this.fileShareFolderName,
-      cloudFileName,
-      filePath,
-      (error, result, response) => {
-        if (error) {
-          errorCallback && errorCallback(error);
-        } else {
-          successCallback && successCallback(result);
-        }
-      }
-    );
+    return new Promise((resolve, reject) => {
+      this.fileService.createFileFromLocalFile(
+        this.fileShareName,
+        this.fileShareFolderName,
+        cloudFileName,
+        filePath,
+        this.handleCallback(resolve, reject)
+      );
+    });
   }
 
   downloadFile(cloudFileName, localFilePath, successCallback, errorCallback) {
