@@ -12,7 +12,6 @@ import { v4 as uuidv4 } from "uuid";
 import { flattenArray, objToArray, formatTimeString } from "./utils/helper";
 import fileHelper from "./utils/fileHelper";
 import useIpcRenderer from "./hooks/useIpcRenderer";
-import { stat } from "fs";
 import Loader from "./componments/Loader";
 const { join, basename, extname, dirname } = window.require("path");
 const { remote, ipcRenderer } = window.require("electron");
@@ -154,7 +153,7 @@ function App() {
     setFiles({ ...files, [newId]: newFile });
   };
   const fileSave = () => {
-    const { path, body, title } = activeFile;
+    const { path, body } = activeFile;
     fileHelper.writeFile(path, body).then(() => {
       setUnsavedFileIds(unsavedFileIds.filter((id) => id !== activeFileId));
       if (isAutoSyncedEnabled()) {
@@ -253,13 +252,13 @@ function App() {
       result[file.id] = {
         ...files[file.id],
         isSynced: true,
-        updatedAt: currentTime
+        updatedAt: currentTime,
       };
       return result;
     }, {});
     setFiles(newFiles);
     saveFilesToStore(newFiles);
-  }
+  };
 
   useIpcRenderer({
     "create-new-file": fileCreate,
@@ -267,19 +266,17 @@ function App() {
     "save-edit-file": fileSave,
     "file-uploaded": fileUpload,
     "file-downloaded": activeFileDownloaded,
-    'loading-status': (message, status) => {
+    "loading-status": (message, status) => {
       setLoading(status);
     },
-    'files-uploaded': filesUploaded
+    "files-uploaded": filesUploaded,
   });
 
   const filesArray = objToArray(files);
   const fileList = searchedFiles.length > 0 ? searchedFiles : filesArray;
   return (
     <div className="App container-fluid px-0">
-      {
-        isLoading && <Loader />
-      }
+      {isLoading && <Loader />}
       <div className="row no-gutters">
         <div className="col-3 left-panel">
           <FileSearch title={"My files"} onFileSearch={fileSearch} />
