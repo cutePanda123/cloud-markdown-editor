@@ -12,6 +12,8 @@ import { v4 as uuidv4 } from "uuid";
 import { flattenArray, objToArray, formatTimeString } from "./utils/helper";
 import fileHelper from "./utils/fileHelper";
 import useIpcRenderer from "./hooks/useIpcRenderer";
+import { stat } from "fs";
+import Loader from "./componments/Loader";
 const { join, basename, extname, dirname } = window.require("path");
 const { remote, ipcRenderer } = window.require("electron");
 const Store = window.require("electron-store");
@@ -49,6 +51,7 @@ function App() {
   const [openedFileIds, setOpenedFileIds] = useState([]);
   const [unsavedFileIds, setUnsavedFileIds] = useState([]);
   const [searchedFiles, setSearchedFiles] = useState([]);
+  const [isLoading, setLoading] = useState(false);
   const savedLocation =
     settingsStore.get("savedFileLocation") || remote.app.getPath("documents");
   const openedFiles = openedFileIds.map((id) => {
@@ -250,12 +253,18 @@ function App() {
     "save-edit-file": fileSave,
     "file-uploaded": fileUpload,
     "file-downloaded": activeFileDownloaded,
+    'loading-status': (message, status) => {
+      setLoading(status);
+    }
   });
 
   const filesArray = objToArray(files);
   const fileList = searchedFiles.length > 0 ? searchedFiles : filesArray;
   return (
     <div className="App container-fluid px-0">
+      {
+        isLoading && <Loader />
+      }
       <div className="row no-gutters">
         <div className="col-3 left-panel">
           <FileSearch title={"My files"} onFileSearch={fileSearch} />

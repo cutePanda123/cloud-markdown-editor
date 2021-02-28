@@ -103,7 +103,7 @@ let template = [
         label: "Sync All",
         enabled: isCloudStorageConfiged,
         click: () => {
-          ipcMain.emit("upload-all-to-qiniu");
+          ipcMain.emit("upload-all");
         },
       },
       {

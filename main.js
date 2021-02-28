@@ -177,6 +177,13 @@ app.on("ready", () => {
     }
   });
 
+  ipcMain.on('upload-all', () => {
+    mainWindow.webContents.send('loading-status', true);
+    setTimeout(() => {
+      mainWindow.webContents.send('loading-status', false);
+    }, 2000);
+  })
+
   ipcMain.on("config-is-saved", () => {
     // the menu index is different from mac os to windows os
     let cloudOperationsMenu =
